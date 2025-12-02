@@ -233,5 +233,3 @@ Our computational neuroanatomy analysis reveals:
   year={2026}
 }
 ```
-
-```

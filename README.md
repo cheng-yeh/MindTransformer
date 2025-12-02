@@ -49,31 +49,80 @@ python -m spacy download zh_core_web_sm
 
 ## 📊 Data Setup
 
-We utilize the **Le Petit Prince (LPP)** fMRI corpus (OpenNeuro ds003643).
+### fMRI Dataset
+
+We use the English subset of the **"Le Petit Prince multilingual naturalistic fMRI corpus"** by Li et al. (2022).
+
+  * **Citation:** Li, J., Bhattasali, S., Zhang, S., Franzluebbers, B., Luh, W., Spreng, R. N., Brennen, J., Yang, Y., Pallier, C., & Hale, J. (2022). Le Petit Prince multilingual naturalistic fMRI corpus. *Scientific Data*, 9, 530.
+  * **Data access:** [doi:10.18112/openneuro.ds003643.v2.0.5](https://doi.org/10.18112/openneuro.ds003643.v2.0.5)
+
+To download the full dataset:
 
 ```bash
-# Download fMRI Data
 aws s3 sync --no-sign-request s3://openneuro.org/ds003643 data/ds003643/
+```
 
-# Download GloVe embeddings (Baseline)
+*Note: For reproducing our main results (in English), the script specifically targets the `annotation/EN` and `derivatives/sub-EN*` subfolders.*
+
+### Word Embeddings (GloVe)
+
+We use GloVe embeddings as a static baseline.
+
+```bash
 mkdir -p data/glove
 wget https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip -P data/glove/
 unzip data/glove/glove.6B.zip -d data/glove/
 ```
 
+This will extract `glove.6B.300d.txt`, which is used in our experiments.
+
 -----
 
 ## 🔧 Configuration
 
-The pipeline is controlled by YAML configuration files. You must update the authentication section to access gated models (e.g., Llama-3) and the encrypted text data.
+All project settings are managed through centralized YAML configuration files (e.g., `config_lpp.yaml`). This structured approach makes it easy to modify parameters and adapt the project to different experiments.
 
-**File:** `config_lpp_*.yaml`
+### Core Configuration Settings
+
+Before running any scripts, you must update the authentication and path settings.
+
+**1. Authentication:**
+For accessing gated LLMs (like Llama-3) on Hugging Face:
 
 ```yaml
 auth:
-  huggingface_token: "YOUR_HF_TOKEN"  # Required for meta-llama
-text_processing:
-  text_archive_password: "YOUR_TEXT_PASSWORD"
+  huggingface_token: "YOUR_HF_TOKEN_HERE" 
+```
+
+**2. Paths:**
+The configuration uses relative paths by default, but you can customize them if your data resides elsewhere:
+
+```yaml
+paths:
+  home_folder: "." 
+  data_root: "./data/ds003643"
+  glove_path: "./data/glove/glove.6B.300d.txt"
+```
+
+**3. Language and Models:**
+You can toggle specific models on or off using the `enabled` flag:
+
+```yaml
+experiment:
+  language: "en"  # Options: en, fr, cn
+
+models:
+  - name: "meta-llama/Llama-3.2-1B-Instruct"
+    enabled: true
+    type: "llama"
+```
+
+### Running with the Configuration
+
+All scripts in the project accept the config file as an argument:
+
+```bash
+python script_name.py --config config_lpp.yaml
 ```
 
 -----
@@ -138,10 +187,10 @@ Systematically evaluates all 13 states to identify the single best predictor for
 # Example: Fit the 'per_head_q_rope' state
 python mindtransformer.py \
     --config config_lpp_llama.yaml \
-    --subject "average" \
-    --run "llm-mode1" \
-    --layers 80 \
-    --inputs "per_head_q_rope"
+    --subject average \
+    --run llm-mode1 \
+    --layers 1 \
+    --inputs per_head_q_rope
 ```
 
 #### C. Mode 2: Multi-State Feature Integration
@@ -154,8 +203,8 @@ python mindtransformer.py \
     --config config_lpp_llama.yaml \
     --subject "average" \
     --run "llm-mode2" \
-    --layers 80 \
-    --inputs "per_head_q_rope" "ffn_activated_state" "attn_output" \
+    --layers 1 \
+    --inputs per_head_q per_head_q_rope per_head_k per_head_k_rope attn_output ffn_activated_state \
     --pivot_input "input_hidden_state" \
     --parcel "Heschl's Gyrus"
 ```
@@ -190,6 +239,120 @@ nano all_mindtransformer.bash
 # Launch the full experiment suite
 ./all_mindtransformer.bash
 ```
+
+-----
+
+## 🎛️ Detailed Experiment Configuration
+
+The master script `script/all_mindtransformer.bash` controls the entire experimental suite. This section explains how to configure it for Baselines, Mode 1, Mode 2, and Subject selection.
+
+### 1\. Subject Selection (`SUBJECT`)
+
+You can run analysis on the group average (standard for noise ceiling) or individual subjects.
+
+```bash
+# Option A: Group Average (Recommended for main results)
+SUBJECT="average"
+
+# Option B: Specific Subject(s) by ID (Space-separated)
+# SUBJECT="057 058 059"
+
+# Option C: All Subjects (Iterates through everyone in the dataset)
+# SUBJECT="all"
+```
+
+### 2\. Baselines (`glove` or `random`)
+
+Baselines do not require model-specific configurations or layer loops.
+
+```bash
+RUN="glove"  # or "random"
+
+# For baselines, always use the generic config
+CONFIGS=(
+    "config_lpp.yaml"
+)
+
+# Dummy values (ignored by baseline script but required for variables)
+MIN_LAYER=1
+MAX_LAYER=1
+LLM_INPUTS=("none")
+```
+
+### 3\. LLM Mode 1: Independent Feature Regression
+
+In this mode, we submit **one job per feature, per layer**. The script iterates through the `LLM_INPUTS` array.
+
+**Configuration:**
+
+```bash
+RUN="llm-mode1"
+
+# Select your model configuration
+CONFIGS=(
+    "config_lpp_llama.yaml"
+)
+
+# Set Layer Range (See Reference Table below)
+MIN_LAYER=1
+MAX_LAYER=80  # Example for Llama-3.3-70B
+
+# Define features to analyze (Array format)
+LLM_INPUTS=(
+    'input_hidden_state'
+    'pre_attn_norm'
+    'per_head_q'
+    'per_head_q_rope'
+    'per_head_k'
+    'per_head_k_rope'
+    'per_head_v'
+    'per_head_context_vector'
+    'attn_output'
+    'post_attn_hidden_state'
+    'pre_ffn_norm'
+    'ffn_activated_state'
+    'ffn_output'
+)
+```
+
+### 4\. LLM Mode 2: Multi-State Pivot Regression
+
+In this mode, we submit **one job per layer** that processes **all features** together. The script requires the features to be passed as a single concatenated string.
+
+**Configuration:**
+
+```bash
+RUN="llm-mode2"
+
+# Select your model configuration
+CONFIGS=(
+    "config_lpp_llama.yaml"
+)
+
+# Set Layer Range
+MIN_LAYER=1
+MAX_LAYER=80
+
+# Define features to COMBINE (Single string in array)
+LLM_INPUTS=(
+    "per_head_q per_head_q_rope per_head_k per_head_k_rope attn_output ffn_activated_state"
+)
+
+# Define the Pivot for feature selection
+PIVOT_INPUT="input_hidden_state"
+```
+
+### 📚 Layer Reference Table (`MAX_LAYER`)
+
+When setting `MAX_LAYER`, refer to the specific architecture of the model defined in your yaml file:
+
+| Config File | Model Family | Max Layer |
+| :--- | :--- | :--- |
+| `config_lpp_llama.yaml` | Llama-3 (70B) | **80** |
+| `config_lpp_mistral.yaml` | Mistral Large | **88** |
+| `config_lpp_qwen.yaml` | Qwen-3 (32B) | **64** |
+| `config_lpp_gemma.yaml` | Gemma-3 (27B) | **62** |
+| `config_lpp_gptoss.yaml` | GPT-OSS | **36** |
 
 -----
 

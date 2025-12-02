@@ -1,0 +1,219 @@
+# Path Configuration
+paths:
+  # CHANGED: Use relative paths for portability.
+  # Assumes script is run from project root.
+  home_folder: "."
+  data_root: "./data/ds003643"
+  
+  # CHANGED: Point to the specific location where download.sbatch places GloVe
+  glove_path: "./data/glove/glove.6B.300d.txt"
+
+  # Derived paths (kept dynamic)
+  fmri_data: "${paths.data_root}/derivatives"
+  annotation_folder: "${paths.data_root}/annotation"
+  
+  # CHANGED: Organized outputs into a dedicated folder
+  llms_activations: "${paths.home_folder}/outputs/lpp_llms_activations"
+  llms_brain_correlations: "${paths.home_folder}/outputs/lpp_llms_brain_correlations"
+  llms_brain_correlations_individual: "${paths.home_folder}/outputs/lpp_llms_brain_correlations_individual"
+  roi_masks: "${paths.home_folder}/outputs/lpp_roi_masks"
+  figures_folder: "${paths.home_folder}/outputs/lpp_figures"
+  output_folder: "${paths.home_folder}/outputs/lpp_outputs"
+  isc_output: "${paths.home_folder}/outputs/lpp_isc_results"
+
+  # Input for other scripts
+  fmri_data_avg_subject_input: "${paths.home_folder}/outputs/lpp_${experiment.language}_average_subject"
+
+# Dataset-specific file patterns
+dataset:
+  name: "lpp"
+  subject_glob: "sub-LANG*" 
+  fmri_glob_pattern: "func/*_desc-preproc_bold.nii.gz"
+
+# General settings
+general:
+  output_baseline: ""
+  n_runs: 9
+  t_r: 2
+
+# Authentication
+auth:
+  # CHANGED: Replaced hardcoded token with placeholder
+  huggingface_token: "<INSERT_YOUR_HUGGINGFACE_TOKEN_HERE>"
+
+# Preprocessing configurations
+preprocessing:
+  target_affine: [
+    [4.0, 0.0, 0.0, -72.0],
+    [0.0, 4.0, 0.0, -106.0],
+    [0.0, 0.0, 4.0, -64.0],
+    [0.0, 0.0, 0.0, 1.0]
+  ]
+  target_shape: [37, 46, 38]
+  mask_threshold: 0.5
+  intersection_threshold: 1
+  high_pass_filter: 0.0078125
+  trim_timepoints: 10
+  isc_trials: 10
+  alpha_exp_min: 2
+  alpha_exp_max: 7
+  alpha_num_points: 16
+
+# ROI definitions
+roi:
+  sphere_radius: 10
+  binarize_threshold: 0.5
+  coordinates:
+    TP: [-48, 15, -27]
+    aSTS: [-54, -12, -12]
+    pSTS: [-51, -39, 3]
+    BA45: [-52, 28, 10]
+    BA47: [-44, 34, -8]
+    BA44: [-50, 12, 16]
+    AG_TPJ: [-52, -56, 22]
+
+# Custom models paths
+custom_models:
+  llama-2-7b-hf: "meta-llama/Llama-2-7b-hf"
+  phi-2: "microsoft/phi-2"
+
+# Models to run
+models:
+  - name: "mistralai/Mistral-Large-Instruct-2411"
+    enabled: true
+    type: "mistral"
+  - name: "mistralai/Mistral-Small-Instruct-2409"
+    enabled: true
+    type: "mistral"
+  - name: "mistralai/Mistral-7B-Instruct-v0.3"
+    enabled: true
+    type: "mistral"
+  - name: "mistralai/Mistral-7B-Instruct-v0.2"
+    enabled: true
+    type: "mistral"
+
+# Baseline models configuration
+baselines:
+  glove:
+    enabled: true
+    dimensions: 300
+  random_embeddings:
+    enabled: true
+    configs:
+      - type: "embedding"
+        n_dims: 640
+        seed: 1
+      - type: "embedding"
+        n_dims: 1024
+        seed: 1
+      - type: "embedding"
+        n_dims: 1152
+        seed: 1
+      - type: "embedding"
+        n_dims: 2048
+        seed: 1
+      - type: "embedding"
+        n_dims: 2560
+        seed: 1
+      - type: "embedding"
+        n_dims: 2880
+        seed: 1
+      - type: "embedding"
+        n_dims: 3072
+        seed: 1
+      - type: "embedding"
+        n_dims: 3840
+        seed: 1
+      - type: "embedding"
+        n_dims: 4096
+        seed: 1
+      - type: "embedding"
+        n_dims: 5120
+        seed: 1
+      - type: "embedding"
+        n_dims: 5376
+        seed: 1
+      - type: "embedding"
+        n_dims: 6144
+        seed: 1
+      - type: "embedding"
+        n_dims: 6912
+        seed: 1
+      - type: "embedding"
+        n_dims: 8192
+        seed: 1
+      - type: "embedding"
+        n_dims: 9728
+        seed: 1
+      - type: "embedding"
+        n_dims: 10240
+        seed: 1
+      - type: "embedding"
+        n_dims: 12288
+        seed: 1
+      - type: "embedding"
+        n_dims: 14436
+        seed: 1
+      - type: "embedding"
+        n_dims: 15360
+        seed: 1
+      - type: "embedding"
+        n_dims: 16384
+        seed: 1
+      - type: "embedding"
+        n_dims: 17408
+        seed: 1
+      - type: "embedding"
+        n_dims: 21504
+        seed: 1
+      - type: "vector"
+        n_dims: 300
+        seed: 1
+
+# Experiment configuration
+experiment:
+  language: "en"
+  roi: "all"
+  seed: 1234
+  model_seed: 0
+  cpu_offload: false
+  cross_validation: 5
+  device: "cuda"
+  activation_mode:
+    - 'input_hidden_state'
+    - 'pre_attn_norm'
+    - 'per_head_q'
+    - 'per_head_q_rope'
+    - 'per_head_k'
+    - 'per_head_k_rope'
+    - 'per_head_v'
+    - 'per_head_context_vector'
+    - 'attn_output'
+    - 'post_attn_hidden_state'
+    - 'pre_ffn_norm'
+    - 'ffn_activated_state'
+    - 'ffn_output'
+  run_baselines: true
+  save_intermediate: true
+  plot_results: true
+  plot_masks: true
+  plot_roi: true
+  show_plots: false
+  verbose: true
+
+# Text processing configuration
+text_processing:
+  # CHANGED: Replaced hardcoded password
+  text_archive_password: "<INSERT_TEXT_ARCHIVE_PASSWORD>"
+  text_zip: "lpp_${experiment.language}_text.zip"
+  punctuation:
+    standard: ['-', "'", "’", "“", '«', '»', '—']
+    chinese: ['，', '《', '》', '。', '：', '“', '”', '；', '？', '！', '…', '、']
+  word_match_attempts: 200
+  chinese_processing:
+    enabled: true
+   
+  # --- NEW SECTION ---
+  processing:
+    batch_size: 1
+    max_tokens: 2048

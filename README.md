@@ -354,6 +354,51 @@ When setting `MAX_LAYER`, refer to the specific architecture of the model define
 | `config_lpp_gemma.yaml` | Gemma-3 (27B) | **62** |
 | `config_lpp_gptoss.yaml` | GPT-OSS | **36** |
 
+
+### 🧠 Brain Region Configuration for LLM Mode 2 (Parcels)
+
+In Mode 2, you can restrict the analysis to specific anatomical regions (parcels) defined by the **Harvard-Oxford Structural Atlas**. This is configured directly inside `script/job_mindtransformer.sbatch`.
+
+**1. Whole Brain Analysis**
+To run the analysis on all voxels in the brain mask, set the array to "all":
+
+```bash
+PARCELS=("all")
+```
+
+**2. Specific Regions (Auditory & Language)**
+Our default configuration targets 10 key regions involved in auditory and language processing:
+
+```bash
+PARCELS=(
+    "Heschl's Gyrus (includes H1 and H2)"
+    "Planum Temporale"
+    "Superior Temporal Gyrus, posterior division"
+    "Superior Temporal Gyrus, anterior division"
+    "Middle Temporal Gyrus, temporooccipital part"
+    "Middle Temporal Gyrus, posterior division"
+    "Middle Temporal Gyrus, anterior division"
+    "Inferior Frontal Gyrus, pars opercularis"
+    "Inferior Frontal Gyrus, pars triangularis"
+    "Angular Gyrus"
+)
+```
+
+**3. Full Atlas Reference**
+The framework supports any of the 48 cortical regions defined in the Harvard-Oxford Cortical Structural Atlas. To view the complete list of available parcel names, you can run the following Python snippet:
+
+```python
+from nilearn import datasets
+
+# Fetch the atlas
+dataset = datasets.fetch_atlas_harvard_oxford('cort-maxprob-thr25-1mm')
+
+# Print all 48 available labels (skipping background)
+print("Available Parcels:")
+for label in dataset.labels[1:]:
+    print(f"- \"{label}\"")
+```
+
 -----
 
 ## 🧠 Intermediate States Analyzed

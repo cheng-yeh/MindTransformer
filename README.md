@@ -4,7 +4,7 @@
 
 **MindTransformer** systematically dissects 13 intermediate computational states within transformer blocks to achieve superior brain alignment. Our framework achieves a **31% improvement** in the primary auditory cortex, surpassing the gains typically achieved by 456× model scaling.
 
-<img src="https://files.osf.io/v1/resources/v3tgq/providers/osfstorage/68d4ab412877c15c51e8d0e2?mode=render" alt="13 intermediate states extracted from each transformer block inside LLMs" width="100%" style="max-width: 900px;">
+<img src="assets/mindtransformer_overview.png" alt="13 intermediate states extracted from each transformer block inside LLMs" width="100%" style="max-width: 900px;">
 
 ---
 

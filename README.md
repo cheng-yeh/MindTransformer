@@ -386,6 +386,40 @@ Our computational neuroanatomy analysis reveals:
 
 -----
 
+### 🏗️ Supported Models & Architectures
+
+We analyze 21 state-of-the-art LLMs across five model families. The architectural parameters for each model are detailed below.
+
+| Family | Model Variant (Model size) | $D_{\text{model}}$ | $N_q$ | $N_{kv}$ | $D_{\text{head}}$ | $D_{\text{ffn}}$ | $N_{\text{layer}}$ |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Llama** | Llama 3.2 Instruct (1B) | 2048 | 32 | 8* | 64 | 8192 | 16 |
+| | Llama 3.2 Instruct (3B) | 3072 | 24 | 8* | 128 | 8192 | 28 |
+| | Llama 3.1 Instruct (8B) | 4096 | 32 | 8* | 128 | 14336 | 32 |
+| | Llama 3.3 Instruct (70B) | 8192 | 64 | 8* | 128 | 28672 | 80 |
+| **Qwen** | Qwen3 (0.6B) | 1024 | 16 | 8* | 128 | 3072 | 28 |
+| | Qwen3 (1.7B) | 2048 | 16 | 8* | 128 | 6144 | 28 |
+| | Qwen3 (4B) | 2560 | 32 | 8* | 128 | 9728 | 36 |
+| | Qwen3 (8B) | 4096 | 32 | 8* | 128 | 12288 | 36 |
+| | Qwen3 (14B) | 5120 | 40 | 8* | 128 | 17408 | 40 |
+| | Qwen3 (32B) | 5120 | 64 | 8* | 128 | 25600 | 64 |
+| **Mistral** | Mistral 7B Instruct v0.2 (7B) | 4096 | 32 | 8* | 128 | 14336 | 32 |
+| | Mistral 7B Instruct v0.3 (7B) | 4096 | 32 | 8* | 128 | 14336 | 32 |
+| | Mistral Small Instruct (22B) | 6144 | 48 | 8* | 128 | 16384 | 56 |
+| | Mistral Large Instruct (123B) | 12288 | 96 | 8* | 128 | 28672 | 88 |
+| **GPT** | GPT-oss (20B) | 2880 | 64 | 8* | 64 | 2880† | 24 |
+| | GPT-oss (120B) | 2880 | 64 | 8* | 64 | 2880† | 36 |
+| **Gemma** | Gemma 3 Instruct (270M) | 640 | 4 | 1* | 256 | 2048 | 18 |
+| | Gemma 3 Instruct (1B) | 1152 | 4 | 1* | 256 | 6912 | 26 |
+| | Gemma 3 Instruct (4B) | 2560 | 8 | 4* | 256 | 10240 | 34 |
+| | Gemma 3 Instruct (12B) | 3840 | 16 | 8* | 256 | 15360 | 48 |
+| | Gemma 3 Instruct (27B) | 5376 | 32 | 16* | 128 | 21504 | 62 |
+
+*\* Model uses Grouped-Query Attention (GQA) or Multi-Query Attention (MQA), where $N_{kv} < N_q$.*
+
+*† Value is per expert in a Mixture-of-Experts (MoE) model.*
+
+-----
+
 ## 📚 Citation
 
 ```bibtex

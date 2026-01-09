@@ -102,9 +102,9 @@ This script will automatically:
 
 ```bash
 conda activate mindtransformer_env
-python -m spacy download en_core_web_sm
-python -m spacy download fr_core_news_sm
-python -m spacy download zh_core_web_sm
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/zh_core_web_sm-3.7.0/zh_core_web_sm-3.7.0-py3-none-any.whl
 ```
 
 #### 2. fMRI Dataset

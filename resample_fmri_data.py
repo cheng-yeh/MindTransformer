@@ -84,8 +84,7 @@ for sub_id in tqdm(subject_list, desc="Processing Subjects"):
         img_resampled = resample_img(fmri_img_path,
                                      target_affine=target_affine,
                                      target_shape=target_shape,
-                                     force_resample=True,
-                                     copy_header=True)
+                                     force_resample=True)
         
         # --- START MODIFICATION ---
         

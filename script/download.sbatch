@@ -15,12 +15,8 @@
 echo "Starting data download at $(date)"
 
 # Robust Project Root Detection
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$SLURM_SUBMIT_DIR")"
 cd "$PROJECT_ROOT"
-
-# Create logs directory for this script
-mkdir -p "$PROJECT_ROOT/script/logs/download_data"
 
 # Create a clean data directory
 DATA_DIR="$PROJECT_ROOT/data"
@@ -28,6 +24,11 @@ mkdir -p "$DATA_DIR"
 
 echo "Project Root: $PROJECT_ROOT"
 echo "Data Directory: $DATA_DIR"
+
+echo "Loading required modules..."
+# NOTE: Users should check their cluster's module naming conventions
+# module load anaconda3/2023.03
+# module load cuda/11.8.0
 
 # Activate environment to ensure 'aws' and 'spacy' are available
 source $(conda info --base)/etc/profile.d/conda.sh

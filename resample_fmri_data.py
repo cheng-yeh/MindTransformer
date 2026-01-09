@@ -58,7 +58,7 @@ make_dir(output_path)
 # Get subject list using the new dynamic glob pattern
 subject_list = np.sort(glob.glob(os.path.join(fmri_data_path, subject_glob_pattern)))
 
-if not subject_list.any():
+if len(subject_list) == 0:
     print(f"Warning: No subjects found at {os.path.join(fmri_data_path, subject_glob_pattern)}")
 
 print(f"Found {len(subject_list)} subjects for dataset '{dataset_name}'. Resampling...")

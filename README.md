@@ -94,7 +94,7 @@ This script will automatically:
 2. Download the full OpenNeuro fMRI dataset (ds003643) via AWS S3
 3. Download and extract GloVe embeddings
 
-> **Note:** The download may take several hours depending on network speed. The OpenNeuro dataset is approximately 50GB.
+> **Note:** The download may take several hours depending on network speed. The OpenNeuro dataset is more than 100GB.
 
 ### Option B: Manual Download (Local/Non-Slurm)
 

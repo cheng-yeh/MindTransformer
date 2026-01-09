@@ -14,13 +14,9 @@
 
 echo "Starting environment setup at $(date)"
 
-# Robust Project Root Detection
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+# Project Root Detection
+PROJECT_ROOT="$(dirname "$SLURM_SUBMIT_DIR")"
 cd "$PROJECT_ROOT"
-
-# Create logs directory
-mkdir -p "$PROJECT_ROOT/script/logs/setup"
 
 echo "Loading required modules..."
 # NOTE: Users should check their cluster's module naming conventions

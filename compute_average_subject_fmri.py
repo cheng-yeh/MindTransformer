@@ -74,7 +74,7 @@ trim_timepoints = config['preprocessing'].get('trim_timepoints', 10)
 
 # --- Get Subject List ---
 subject_list = np.sort(glob.glob(os.path.join(fmri_data_resampled, subject_glob_pattern)))
-if not subject_list.any():
+if len(subject_list) == 0:
     raise FileNotFoundError(f"No resampled subject folders found at: {os.path.join(fmri_data_resampled, subject_glob_pattern)}")
 n_subjects = len(subject_list)
 print(f"Found {n_subjects} subjects.")

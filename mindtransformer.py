@@ -235,7 +235,7 @@ for subject_id in subjects_to_process:
             print(f"\n{'='*80}\nProcessing {subject_id} (STATIC RUNS)\n{'='*80}")
             
             if subject_id == 'average':
-                fmri_data_path = os.path.join(config['paths']['home_folder'], f'{average_dir_name}{output_suffix}')
+                fmri_data_path = config['paths']['fmri_data_avg_subject_input']
                 file_prefix = 'average_subject'
                 subject_output_folder = base_output_folder
             else: 

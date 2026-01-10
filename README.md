@@ -547,7 +547,7 @@ Kudos to the github repository [llms_brain_lateralization](https://github.com/l-
 ```bibtex
 @inproceedings{mindtransformer2026,
   title={The Mind's Transformer: Computational Neuroanatomy of LLM-Brain Alignment},
-  author={Chen, Cheng-Yeh and Sivakumar, Raghupathy},
+  author={Cheng-Yeh Chen and Raghupathy Sivakumar},
   booktitle={International Conference on Learning Representations (ICLR)},
   year={2026}
 }

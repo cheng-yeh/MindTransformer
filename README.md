@@ -535,6 +535,13 @@ We analyze 21 state-of-the-art LLMs across five model families. The architectura
 
 -----
 
+## 🙏 Acknowledgement
+
+Kudos to the github repository [llms_brain_lateralization](https://github.com/l-bg/llms_brain_lateralization) and their [NeurIPS paper](https://neurips.cc/virtual/2024/poster/94784).
+
+
+-----
+
 ## 📚 Citation
 
 ```bibtex
@@ -545,9 +552,3 @@ We analyze 21 state-of-the-art LLMs across five model families. The architectura
   year={2026}
 }
 ```
-
------
-
-## 🙏 Acknowledgement
-
-Kudos to the github repository [llms_brain_lateralization](https://github.com/l-bg/llms_brain_lateralization) and their [NeurIPS paper](https://neurips.cc/virtual/2024/poster/94784).

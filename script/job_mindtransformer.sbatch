@@ -12,6 +12,27 @@
 # #SBATCH --account=YOUR_ACCOUNT_NAME
 # #SBATCH -q YOUR_QOS_NAME
 
+echo "Starting preprocessing and extraction at $(date)"
+
+# Project Root Detection
+PROJECT_ROOT="$(dirname "$SLURM_SUBMIT_DIR")"
+cd "$PROJECT_ROOT"
+
+echo "Project Root: $PROJECT_ROOT"
+
+echo "Loading required modules..."
+# NOTE: Users should check their cluster's module naming conventions
+# module load anaconda3/2023.03
+# module load cuda/11.8.0
+
+# Set Hugging Face cache directory
+export HF_HOME=/storage/scratch1/3/cchen847/.cache/huggingface_cache
+
+# Activate environment
+source $(conda info --base)/etc/profile.d/conda.sh
+conda activate mindtransformer_env
+
+
 # --- Argument Handling ---
 # Expecting 7 arguments (Parcel is the 7th, strictly positional)
 if [ "$#" -ne 7 ]; then

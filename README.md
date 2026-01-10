@@ -120,6 +120,7 @@ aws s3 sync --no-sign-request s3://openneuro.org/ds003643 data/ds003643/
 ```
 
 > *Note: For reproducing our main results (in English), the script specifically targets the `annotation/EN` and `derivatives/sub-EN*` subfolders.*
+> *Note: We strongly recommend going through [llms_brain_lateralization](https://github.com/l-bg/llms_brain_lateralization) for the dataset preparation and preprocessing since this repository is where we adopt the code for the data pipeline.*
 
 #### 3. Word Embeddings (GloVe)
 
@@ -544,3 +545,9 @@ We analyze 21 state-of-the-art LLMs across five model families. The architectura
   year={2026}
 }
 ```
+
+-----
+
+## 🙏 Acknowledgement
+
+Kudos to the github repository [llms_brain_lateralization](https://github.com/l-bg/llms_brain_lateralization) and their [NeurIPS paper](https://neurips.cc/virtual/2024/poster/94784).

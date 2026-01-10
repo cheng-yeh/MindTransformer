@@ -207,7 +207,7 @@ experiment:
 # Text processing configuration
 text_processing:
   # CHANGED: Replaced hardcoded password
-  text_archive_password: "<INSERT_TEXT_ARCHIVE_PASSWORD>"
+  text_archive_password: "lessentielestinvisiblepourlesyeux"
   text_zip: "lpp_${experiment.language}_text.zip"
   punctuation:
     standard: ['-', "'", "’", "“", '«', '»', '—']

@@ -15,12 +15,8 @@
 echo "Starting data download at $(date)"
 
 # Robust Project Root Detection
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+PROJECT_ROOT="$(dirname "$SLURM_SUBMIT_DIR")"
 cd "$PROJECT_ROOT"
-
-# Create logs directory for this script
-mkdir -p "$PROJECT_ROOT/script/logs/download_data"
 
 # Create a clean data directory
 DATA_DIR="$PROJECT_ROOT/data"
@@ -28,6 +24,11 @@ mkdir -p "$DATA_DIR"
 
 echo "Project Root: $PROJECT_ROOT"
 echo "Data Directory: $DATA_DIR"
+
+echo "Loading required modules..."
+# NOTE: Users should check their cluster's module naming conventions
+# module load anaconda3/2023.03
+# module load cuda/11.8.0
 
 # Activate environment to ensure 'aws' and 'spacy' are available
 source $(conda info --base)/etc/profile.d/conda.sh
@@ -37,9 +38,9 @@ conda activate mindtransformer_env
 # 1. Download spaCy Models
 # ---------------------------------------------------------
 echo "Downloading spaCy models..."
-python -m spacy download en_core_web_sm
-python -m spacy download fr_core_news_sm
-python -m spacy download zh_core_web_sm
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/zh_core_web_sm-3.7.0/zh_core_web_sm-3.7.0-py3-none-any.whl
 
 # ---------------------------------------------------------
 # 2. Download OpenNeuro Dataset (ds003643)

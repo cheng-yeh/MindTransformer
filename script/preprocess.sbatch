@@ -15,15 +15,16 @@
 
 echo "Starting preprocessing and extraction at $(date)"
 
-# Robust Project Root Detection
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+# Project Root Detection
+PROJECT_ROOT="$(dirname "$SLURM_SUBMIT_DIR")"
 cd "$PROJECT_ROOT"
 
-# Create logs directory
-mkdir -p "$PROJECT_ROOT/script/logs/preprocess"
-
 echo "Project Root: $PROJECT_ROOT"
+
+echo "Loading required modules..."
+# NOTE: Users should check their cluster's module naming conventions
+# module load anaconda3/2023.03
+# module load cuda/11.8.0
 
 # Activate environment
 source $(conda info --base)/etc/profile.d/conda.sh

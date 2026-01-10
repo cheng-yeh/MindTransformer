@@ -29,54 +29,123 @@
 
 ## 🛠️ Installation
 
-You can set up the environment manually using the commands below, or use the automated script (`script/setup.sbatch`) if you are on a Slurm cluster.
+### Option A: Automated Setup (Recommended for HPC/Slurm)
+
+If you're on a Slurm-based HPC cluster, use our automated scripts for a streamlined setup:
 
 ```bash
-# 1. Create environment
+# 1. Clone the repository
+git clone https://github.com/your-username/MindTransformer.git
+cd MindTransformer
+
+# 2. Navigate to the script directory
+cd script
+
+# 3. Create logs directory (required for Slurm output)
+mkdir -p logs
+
+# 4. Run the environment setup script
+sbatch setup.sbatch
+```
+
+This script will:
+- Create a conda environment (`mindtransformer_env`) with Python 3.10
+- Install all dependencies from `requirements.txt`
+- Upgrade `transformers` to the latest version
+
+> **Note:** Before running, edit `script/setup.sbatch` to configure cluster-specific settings:
+> - Uncomment and set `#SBATCH --account=` and `#SBATCH -q` if required by your cluster
+> - Adjust `module load` commands to match your cluster's naming conventions
+
+### Option B: Manual Setup (Local/Non-Slurm)
+
+For local machines or non-Slurm environments:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/your-username/MindTransformer.git
+cd MindTransformer
+
+# 2. Create and activate conda environment
 conda create -y --name mindtransformer_env python=3.10
 conda activate mindtransformer_env
 
-# 2. Install dependencies
+# 3. Install dependencies
 pip install -r requirements.txt
-
-# 3. Download spaCy models for tokenization
-python -m spacy download en_core_web_sm
-python -m spacy download fr_core_news_sm
-python -m spacy download zh_core_web_sm
+pip install --upgrade transformers
 ```
 
------
+---
 
 ## 📊 Data Setup
 
-### fMRI Dataset
+### Option A: Automated Download (Recommended for HPC/Slurm)
 
-We use the English subset of the **"Le Petit Prince multilingual naturalistic fMRI corpus"** by Li et al. (2022).
-
-  * **Citation:** Li, J., Bhattasali, S., Zhang, S., Franzluebbers, B., Luh, W., Spreng, R. N., Brennen, J., Yang, Y., Pallier, C., & Hale, J. (2022). Le Petit Prince multilingual naturalistic fMRI corpus. *Scientific Data*, 9, 530.
-  * **Data access:** [doi:10.18112/openneuro.ds003643.v2.0.5](https://doi.org/10.18112/openneuro.ds003643.v2.0.5)
-
-To download the full dataset:
+After the environment setup job completes, download the data:
 
 ```bash
+# From the script/ directory
+cd script  # if not already there
+sbatch download.sbatch
+```
+
+This script will automatically:
+1. Download spaCy language models (English, French, Chinese)
+2. Download the full OpenNeuro fMRI dataset (ds003643) via AWS S3
+3. Download and extract GloVe embeddings
+
+> **Note:** The download may take several hours depending on network speed. The OpenNeuro dataset is more than 200GB.
+
+### Option B: Manual Download (Local/Non-Slurm)
+
+#### 1. spaCy Language Models
+
+```bash
+conda activate mindtransformer_env
+pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/fr_core_news_sm-3.7.0/fr_core_news_sm-3.7.0-py3-none-any.whl
+pip install https://github.com/explosion/spacy-models/releases/download/zh_core_web_sm-3.7.0/zh_core_web_sm-3.7.0-py3-none-any.whl
+```
+
+#### 2. fMRI Dataset
+
+We use the **"Le Petit Prince multilingual naturalistic fMRI corpus"** by Li et al. (2022).
+
+- **Citation:** Li, J., Bhattasali, S., Zhang, S., Franzluebbers, B., Luh, W., Spreng, R. N., Brennan, J., Yang, Y., Pallier, C., & Hale, J. (2022). Le Petit Prince multilingual naturalistic fMRI corpus. *Scientific Data*, 9, 530.
+- **Data access:** [doi:10.18112/openneuro.ds003643.v2.0.5](https://doi.org/10.18112/openneuro.ds003643.v2.0.5)
+
+```bash
+# Requires AWS CLI (install via: pip install awscli)
 aws s3 sync --no-sign-request s3://openneuro.org/ds003643 data/ds003643/
 ```
 
-*Note: For reproducing our main results (in English), the script specifically targets the `annotation/EN` and `derivatives/sub-EN*` subfolders.*
+> *Note: For reproducing our main results (in English), the script specifically targets the `annotation/EN` and `derivatives/sub-EN*` subfolders.*
 
-### Word Embeddings (GloVe)
+#### 3. Word Embeddings (GloVe)
 
-We use GloVe embeddings as a static baseline.
+We use GloVe embeddings as a static baseline:
 
 ```bash
 mkdir -p data/glove
-wget https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip -P data/glove/
-unzip data/glove/glove.6B.zip -d data/glove/
+cd data/glove
+wget https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip
+unzip glove.6B.zip
+rm glove.6B.zip  # Optional: remove zip to save space
+cd ../..
 ```
 
 This will extract `glove.6B.300d.txt`, which is used in our experiments.
 
------
+### Quick Start Summary
+
+| Step | Slurm (HPC) | Local |
+|------|-------------|-------|
+| 1. Environment | `cd script && sbatch setup.sbatch` | Manual conda + pip |
+| 2. Data | `sbatch download.sbatch` | Manual spacy + wget + aws |
+| 3. Preprocess | `sbatch preprocess.sbatch` | Run Python scripts directly |
+| 4. Experiments | `./all_mindtransformer.bash` | `python mindtransformer.py ...` |
+
+> **Important:** All `sbatch` commands should be executed from the `script/` directory.
 
 ## 🔧 Configuration
 

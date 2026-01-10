@@ -61,7 +61,7 @@ fmri_data_resampled = os.path.join(home_folder, resampled_folder_name)
 # Get subject list from the resampled fMRI data
 subject_list = np.sort(glob.glob(os.path.join(fmri_data_resampled, subject_glob_pattern)))
 
-if not subject_list.any():
+if len(subject_list) == 0:
     raise FileNotFoundError(f"No resampled subject folders found at: {os.path.join(fmri_data_resampled, subject_glob_pattern)}")
 
 print(f"Found {len(subject_list)} subjects in {fmri_data_resampled}. Collecting run files...")
